@@ -1,11 +1,7 @@
 package net.sideways_sky.realisticsleep;
 
-import net.minecraft.server.ServerTickRateManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ServerTickManager;
-import org.jetbrains.annotations.Nullable;
-
-import java.lang.reflect.Field;
 
 public class Skipper {
     private final SkipMode skipMode;
@@ -24,37 +20,18 @@ public class Skipper {
     }
     public void stop(){
         if(skipMode == SkipMode.SPRINT) {
-            if(nmsManager == null){
                 Bukkit.getServerTickManager().stopSprinting();
-            } else {
-                nmsManager.stopSprinting(false);
-            }
         } else {
             bukkitManager.setTickRate(preSkipSpeed);
         }
         isSkipping = false;
     }
     private final ServerTickManager bukkitManager;
-    @Nullable
-    private ServerTickRateManager nmsManager = null;
     public Skipper(SkipMode skipMode, int skipSpeed)  {
         this.skipMode = skipMode;
         this.skipSpeed = skipSpeed;
-        bukkitManager = Bukkit.getServerTickManager();
-
-        try {
-            Class<?> clazz = cbClass("CraftServerTickManager");
-            Field manager = clazz.getDeclaredField("manager");
-            manager.setAccessible(true);
-            nmsManager = (ServerTickRateManager) manager.get(bukkitManager);
-        } catch (NoSuchFieldException | ClassNotFoundException | IllegalAccessException e) {
-            Bukkit.getLogger().warning("Failed to fetch ServerTickRateManager - defaulting to bukkitManager");
-        }
+        bukkitManager = RealisticSleep.instance.getServer().getServerTickManager();
 
     }
 
-    private final String CRAFTBUKKIT_PACKAGE = Bukkit.getServer().getClass().getPackage().getName();
-    public Class<?> cbClass(String clazz) throws ClassNotFoundException {
-        return Class.forName(CRAFTBUKKIT_PACKAGE + "." + clazz);
-    }
 }

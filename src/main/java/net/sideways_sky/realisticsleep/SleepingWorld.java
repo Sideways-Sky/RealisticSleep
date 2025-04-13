@@ -25,10 +25,11 @@ public class SleepingWorld {
                 (RealisticSleep.instance.skipper.isSkipping ? " " + Math.round(((float) ((world.getTime() - NightEnd) * 100) / NightDir) + 100) + "%" : ""));
     }
     public void update(){
-        numSleepersNeeded = (world.getGameRuleValue(GameRule.PLAYERS_SLEEPING_PERCENTAGE) / 100) * world.getPlayers().size();
+        var a = world.getGameRuleValue(GameRule.PLAYERS_SLEEPING_PERCENTAGE) * world.getPlayers().size();
+        numSleepersNeeded = Math.max(a / 100, 1);
         sleepers = world.getPlayers().stream().filter(HumanEntity::isDeeplySleeping).toList();
         numInBedNotSleep = (int) world.getPlayers().stream().filter(player -> player.isSleeping() && !player.isDeeplySleeping()).count();
-        boolean gotNeededSleepers = sleepers.size() / numSleepersNeeded >= 1;
+        boolean gotNeededSleepers = (sleepers.size()*100) / a >= 1;
 
         if(RealisticSleep.instance.skipper.isSkipping && !gotNeededSleepers){
             RealisticSleep.instance.skipper.stop();
