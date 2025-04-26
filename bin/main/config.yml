@@ -1,0 +1,7 @@
+# how to skip the night:
+# SPRINT - tick sprint the server until sunrise
+# RATE - set the server tick rate; resets on sunrise; Uses night-skip-speed as tick rate
+night-skip: SPRINT
+
+# <Integer> ticks per second; Used with RATE mode
+night-skip-speed: 240
